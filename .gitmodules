@@ -1,9 +1,9 @@
-[submodule "imgui"]
-	path = imgui
-	url = https://github.com/ocornut/imgui/
-[submodule "refl-cpp"]
-	path = refl-cpp
+[submodule "TypeRenderer/externals/imgui"]
+	path = TypeRenderer/externals/imgui
+	url = https://github.com/ocornut/imgui
+[submodule "TypeRenderer/externals/refl-cpp"]
+	path = TypeRenderer/externals/refl-cpp
 	url = https://github.com/veselink1/refl-cpp
-[submodule "magic_enum"]
-	path = magic_enum
+[submodule "TypeRenderer/externals/magic_enum"]
+	path = TypeRenderer/externals/magic_enum
 	url = https://github.com/Neargye/magic_enum

@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TypeRenderer", "TypeRenderer\TypeRenderer.vcxproj", "{713C8965-3F07-466C-B114-4F7D7442DF7E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test\Test.vcxproj", "{D43F9944-2646-4CEE-AF8F-400A2D2681B4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -18,5 +20,13 @@ Global
 		{713C8965-3F07-466C-B114-4F7D7442DF7E}.Release|Win32.Build.0 = Release|Win32
 		{713C8965-3F07-466C-B114-4F7D7442DF7E}.Release|x64.ActiveCfg = Release|x64
 		{713C8965-3F07-466C-B114-4F7D7442DF7E}.Release|x64.Build.0 = Release|x64
+		{D43F9944-2646-4CEE-AF8F-400A2D2681B4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D43F9944-2646-4CEE-AF8F-400A2D2681B4}.Debug|Win32.Build.0 = Debug|Win32
+		{D43F9944-2646-4CEE-AF8F-400A2D2681B4}.Debug|x64.ActiveCfg = Debug|x64
+		{D43F9944-2646-4CEE-AF8F-400A2D2681B4}.Debug|x64.Build.0 = Debug|x64
+		{D43F9944-2646-4CEE-AF8F-400A2D2681B4}.Release|Win32.ActiveCfg = Release|Win32
+		{D43F9944-2646-4CEE-AF8F-400A2D2681B4}.Release|Win32.Build.0 = Release|Win32
+		{D43F9944-2646-4CEE-AF8F-400A2D2681B4}.Release|x64.ActiveCfg = Release|x64
+		{D43F9944-2646-4CEE-AF8F-400A2D2681B4}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 EndGlobal
