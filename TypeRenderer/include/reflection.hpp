@@ -51,44 +51,58 @@ namespace Reflection
     /// @tparam DescriptorT Member descriptor
     template <typename DescriptorT>
     constexpr bool_t IsFunction = refl::trait::is_function_v<DescriptorT>;
+
+    template <typename>
+    struct StructGetMemberT
+    {
+        using Type = decltype(nullptr);
+    };
     
-    /// @brief Allows a boolean to be set to true when the field is modified
-    /// @tparam T Parent type
-    template <typename T>
-    struct NotifyChange : FieldAttribute
+    template <typename T, size_t N>
+    struct StructGetMemberT<refl::function_descriptor<T, N>>
     {
-        /// @brief Shorthand for a class member pointer
-        using PtrType = bool_t T::*;
-
-        /// @brief Pointer to the boolean
-        PtrType pointer;
-
-        /// @brief Creates a notify change attribute using a pointer to a boolean inside the concerned class
-        /// @param ptr Boolean pointer in the class
-        constexpr explicit NotifyChange(const PtrType ptr) : pointer(ptr) {}
+        using Type = decltype(refl::function_descriptor<T, N>::pointer);
     };
 
-    /// @brief Allows a callback to be called when a element of object is modified
-    /// @tparam T Modified type
-    template <typename T>
-    struct ModifiedCallback : FieldAttribute
+    template <typename T, size_t N>
+    struct StructGetMemberT<refl::field_descriptor<T, N>>
     {
-        using Type = void(*)(T*);
-
-        Type callback;
-
-        constexpr explicit ModifiedCallback(Type&& c) : callback(std::move(c)) {}
+        using Type = Meta::RemoveConstSpecifier<typename refl::field_descriptor<T, N>::value_type>;
     };
 
+    /// @brief Gets the member type declaration, whether it's a field or a function
+    /// @tparam DescriptorT Member descriptor
+    template <typename DescriptorT>
+    using GetMemberT = typename StructGetMemberT<DescriptorT>::Type;
+
+    /// @brief Gets the type info of a class
+    /// @tparam ReflectT Type
+    /// @return Type info
+    template <typename ReflectT>
+    constexpr TypeDescriptor<ReflectT> GetTypeInfo() { return refl::reflect<ReflectT>(); }
+
+    /// @brief Checks if a descriptor has a specified attribute
+    /// @tparam AttributeT Attribute type
+    /// @tparam DescriptorT Descriptor type
+    /// @return Result
+    template <typename AttributeT, typename DescriptorT>
+    constexpr bool_t HasAttribute() { return refl::descriptor::has_attribute<AttributeT, DescriptorT>(DescriptorT{}); }
+
+    /// @brief Gets the specified attribute of a descriptor
+    /// @tparam AttributeT Attribute type
+    /// @tparam DescriptorT Descriptor type
+    /// @return Attribute
+    template <typename AttributeT, typename DescriptorT>
+    constexpr const AttributeT& GetAttribute() { return refl::descriptor::get_attribute<AttributeT, DescriptorT>(DescriptorT{}); }
+}
+
+namespace Reflection
+{
     /// @brief Display a field as read only
     struct ReadOnly : FieldAttribute
     {
     };
 
-    /// @brief Allows an enum to be treated as a list of binary flags
-    struct EnumFlags : FieldAttribute
-    {
-    };
 
     /// @brief Allows an integer or floating type to be bound between a minimum and a maximum value, it will display the field using a slider
     /// @tparam T Field type
@@ -134,6 +148,47 @@ namespace Reflection
         constexpr explicit DynamicRange(const PtrType min, const PtrType max) : minimum(min), maximum(max) {}
     };
 
+
+    /// @brief Allows a boolean to be set to true when the field is modified
+    /// @tparam ReflectT Parent type
+    template <typename ReflectT>
+    struct NotifyChange : FieldAttribute
+    {
+        /// @brief Shorthand for a class member pointer
+        using PtrType = bool_t ReflectT::*;
+
+        /// @brief Pointer to the boolean
+        PtrType pointer;
+
+        /// @brief Creates a notify change attribute using a pointer to a boolean inside the concerned class
+        /// @param ptr Boolean pointer in the class
+        constexpr explicit NotifyChange(const PtrType ptr) : pointer(ptr) {}
+    };
+
+    /// @brief Allows a callback to be called when a element of object is modified
+    /// @tparam ReflectT Parent type
+    template <typename ReflectT>
+    struct ModifiedCallback : FieldAttribute
+    {
+        using Type = void(*)(ReflectT*);
+
+        Type callback;
+
+        constexpr explicit ModifiedCallback(Type&& c) : callback(std::move(c)) {}
+    };
+    
+
+    /// @brief Allows an enum to be treated as a list of binary flags
+    struct EnumFlags : FieldAttribute
+    {
+    };
+
+    /// @brief Allow an enum to be displayed as radio buttons
+    struct EnumRadioButton : FieldAttribute
+    {
+    };
+
+
     /// @brief Allows a tooltip to be bound to a member
     struct Tooltip : MemberAttribute
     {
@@ -161,57 +216,14 @@ namespace Reflection
         constexpr explicit DynamicTooltip(const PtrType t) : text(t) {}
     };
 
-    /// @brief Gets the type info of a class
-    /// @tparam ReflectT Type
-    /// @return Type info
-    template <typename ReflectT>
-    constexpr TypeDescriptor<ReflectT> GetTypeInfo();
+    /// @brief Allows to change the display name of the member, overriding the default name
+    struct CustomName : MemberAttribute
+    {
+        /// @brief Custom name text
+        const char_t* text;
 
-    /// @brief Checks if a descriptor has a specified attribute
-    /// @tparam AttributeT Attribute type
-    /// @tparam DescriptorT Descriptor type
-    /// @return Result
-    template <typename AttributeT, typename DescriptorT>
-    constexpr bool_t HasAttribute();
-
-    /// @brief Gets the specified attribute of a descriptor
-    /// @tparam AttributeT Attribute type
-    /// @tparam DescriptorT Descriptor type
-    /// @return Attribute
-    template <typename AttributeT, typename DescriptorT>
-    constexpr const AttributeT& GetAttribute();
-
-    /// @brief Tries to get a specified attribute of a descriptor
-    /// @tparam AttributeT Attribute type
-    /// @tparam DescriptorT Descriptor type
-    /// @return Attribute, @c nullptr if not found
-    template <typename AttributeT, typename DescriptorT>
-    constexpr const AttributeT* TryGetAttribute();
-}
-
-template <typename ReflectT>
-constexpr TypeDescriptor<ReflectT> Reflection::GetTypeInfo()
-{
-    return refl::reflect<ReflectT>();
-}
-
-template <typename AttributeT, typename DescriptorT>
-constexpr bool_t Reflection::HasAttribute()
-{
-    return refl::descriptor::has_attribute<AttributeT, DescriptorT>(DescriptorT{});
-}
-
-template <typename AttributeT, typename DescriptorT>
-constexpr const AttributeT& Reflection::GetAttribute()
-{
-    return refl::descriptor::get_attribute<AttributeT, DescriptorT>(DescriptorT{});
-}
-
-template <typename AttributeT, typename DescriptorT>
-constexpr const AttributeT* Reflection::TryGetAttribute()
-{
-    if constexpr (HasAttribute<AttributeT, DescriptorT>())
-        return &GetAttribute<AttributeT, DescriptorT>();
-    else
-        return nullptr;
+        /// @brief Creates a custom name from a string literal
+        /// @param t Tooltip text
+        constexpr explicit CustomName(const char_t* const t) : text(t) {}
+    };
 }

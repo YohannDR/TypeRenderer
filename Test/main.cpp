@@ -1,14 +1,20 @@
 #include <cstdlib>
 #include <iostream>
+#include <ranges>
 
 #include "glad.h"
 #include "macros.hpp"
-#include "test_struct.hpp"
 #include "type_renderer.hpp"
 #include "GLFW/glfw3.h"
 #include "imgui/imgui.h"
 #include "imgui/backends/imgui_impl_glfw.h"
 #include "imgui/backends/imgui_impl_opengl3.h"
+
+#include "examples/base_types.hpp"
+#include "examples/callbacks.hpp"
+#include "examples/containers.hpp"
+#include "examples/enums.hpp"
+#include "examples/range.hpp"
 
 namespace
 {
@@ -26,7 +32,7 @@ namespace
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        window = glfwCreateWindow(800, 600, "Type renderer test", nullptr, nullptr);
+        window = glfwCreateWindow(1000, 800, "Type renderer test", nullptr, nullptr);
 
         glfwMakeContextCurrent(window);
         glfwShowWindow(window);
@@ -86,12 +92,21 @@ int main(int, char*[])
     if (!Setup())
         return EXIT_FAILURE;
 
-    TestStruct myStruct;
+    MAYBE_UNUSED BaseTypesExample baseTypesExample;
+    MAYBE_UNUSED RangeExample rangeExample;
+    MAYBE_UNUSED EnumExample enumExample;
+    MAYBE_UNUSED CallbacksExample callbacksExample;
+    MAYBE_UNUSED ContainersExample containersExample;
+
     while (!glfwWindowShouldClose(window))
     {
         PreLoop();
 
-        TypeRenderer::RenderType(&myStruct);
+        // TypeRenderer::RenderType(&baseTypesExample, true);
+        // TypeRenderer::RenderType(&rangeExample, true);
+        // TypeRenderer::RenderType(&enumExample, true);
+        // TypeRenderer::RenderType(&callbacksExample, true);
+        TypeRenderer::RenderType(&containersExample, true);
 
         PostLoop();
     }
