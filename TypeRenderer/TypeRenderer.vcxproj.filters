@@ -15,57 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\backends\imgui_impl_dx10.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\backends\imgui_impl_dx11.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\backends\imgui_impl_dx12.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\backends\imgui_impl_dx9.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\backends\imgui_impl_glfw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\backends\imgui_impl_glut.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\backends\imgui_impl_opengl2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\backends\imgui_impl_opengl3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\backends\imgui_impl_sdl2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\backends\imgui_impl_sdl3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\backends\imgui_impl_sdlgpu3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\backends\imgui_impl_sdlrenderer2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\backends\imgui_impl_sdlrenderer3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\backends\imgui_impl_vulkan.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\backends\imgui_impl_wgpu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\backends\imgui_impl_win32.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="externals\imgui\imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -84,74 +33,14 @@
     <ClCompile Include="externals\imgui\misc\cpp\imgui_stdlib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="externals\imgui\misc\fonts\binary_to_compressed_c.cpp">
+    <ClCompile Include="externals\imgui\backends\imgui_impl_glfw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="externals\imgui\misc\freetype\imgui_freetype.cpp">
+    <ClCompile Include="externals\imgui\backends\imgui_impl_opengl3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_dx10.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_dx11.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_dx12.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_dx9.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_glfw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_glut.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_metal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_opengl2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_opengl3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_opengl3_loader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_osx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_sdl2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_sdl3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_sdlgpu3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_sdlgpu3_shaders.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_sdlrenderer2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_sdlrenderer3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_vulkan.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_wgpu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\backends\imgui_impl_win32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="externals\imgui\imconfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -203,14 +92,26 @@
     <ClInclude Include="externals\imgui\misc\cpp\imgui_stdlib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="externals\imgui\misc\freetype\imgui_freetype.h">
+    <ClInclude Include="include\macros.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="externals\imgui\misc\single_file\imgui_single_file.h">
+    <ClInclude Include="include\meta_programming.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Natvis Include="externals\imgui\misc\debuggers\imgui.natvis" />
+    <ClInclude Include="include\reflection.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\type_renderer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\backends\imgui_impl_glfw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\backends\imgui_impl_opengl3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\backends\imgui_impl_opengl3_loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
