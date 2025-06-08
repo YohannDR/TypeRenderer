@@ -676,7 +676,11 @@ bool_t TypeRendererImpl<MemberT, Meta::EnableIf<Meta::IsEnum<MemberT>>>::Render(
         // Compute preview value, it should display as all the selected values, comma separated
         // e.g. : Value1,Value2,Value8
         auto v = magic_enum::enum_flags_name<MemberT>(*metadata.obj, ',');
-        const char_t* const previewValue = v.data();
+        const char_t* previewValue;
+        if (static_cast<size_t>(*metadata.obj) == 0)
+            previewValue = "<None>";
+        else
+            previewValue = v.data();
 
         // Need to do a custom combo implementation because we can select multiple values
         if (ImGui::BeginCombo(metadata.name, previewValue))
@@ -688,7 +692,7 @@ bool_t TypeRendererImpl<MemberT, Meta::EnableIf<Meta::IsEnum<MemberT>>>::Render(
                 // Get member value
                 size_t value = static_cast<size_t>(*metadata.obj);
                 // Check if the enum value is set
-                const bool_t isSelected = (value & enumValue) == enumValue;
+                const bool_t isSelected = (enumValue != 0) && (value & enumValue) == enumValue;
 
                 if (ImGui::MenuItem(enumNames.at(i).data(), nullptr, isSelected))
                 {

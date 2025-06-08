@@ -1,6 +1,5 @@
 #include <cstdlib>
 #include <iostream>
-#include <ranges>
 
 #include "glad.h"
 #include "macros.hpp"
@@ -13,8 +12,11 @@
 #include "examples/base_types.hpp"
 #include "examples/callbacks.hpp"
 #include "examples/containers.hpp"
+#include "examples/custom.hpp"
 #include "examples/enums.hpp"
+#include "examples/nesting.hpp"
 #include "examples/range.hpp"
+#include "examples/tooltip.hpp"
 
 namespace
 {
@@ -97,16 +99,22 @@ int main(int, char*[])
     MAYBE_UNUSED EnumExample enumExample;
     MAYBE_UNUSED CallbacksExample callbacksExample;
     MAYBE_UNUSED ContainersExample containersExample;
+    MAYBE_UNUSED TooltipExample tooltipExample;
+    MAYBE_UNUSED CustomExample customExample;
+    MAYBE_UNUSED NestingExample nestingExample;
 
     while (!glfwWindowShouldClose(window))
     {
         PreLoop();
 
-        // TypeRenderer::RenderType(&baseTypesExample, true);
-        // TypeRenderer::RenderType(&rangeExample, true);
-        // TypeRenderer::RenderType(&enumExample, true);
-        // TypeRenderer::RenderType(&callbacksExample, true);
+        TypeRenderer::RenderType(&baseTypesExample, true);
+        TypeRenderer::RenderType(&rangeExample, true);
+        TypeRenderer::RenderType(&enumExample, true);
+        TypeRenderer::RenderType(&callbacksExample, true);
         TypeRenderer::RenderType(&containersExample, true);
+        TypeRenderer::RenderType(&tooltipExample, true);
+        TypeRenderer::RenderType(&customExample, true);
+        TypeRenderer::RenderType(&nestingExample, true);
 
         PostLoop();
     }
