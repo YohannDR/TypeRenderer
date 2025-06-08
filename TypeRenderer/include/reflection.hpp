@@ -188,6 +188,18 @@ namespace Reflection
     {
     };
 
+    /// @brief Allows a callback to be called when adding an element to a container
+    /// @tparam ReflectT Top level reflected type
+    /// @tparam ArrayT Array element type
+    template <typename ReflectT, typename ArrayT>
+    struct ContainerAddCallback : FieldAttribute
+    {
+        using FuncT = void (ReflectT::*)(ArrayT&);
+
+        FuncT func;
+
+        constexpr explicit ContainerAddCallback(const FuncT callback) : func(callback) {}
+    };
 
     /// @brief Allows a tooltip to be bound to a member
     struct Tooltip : MemberAttribute

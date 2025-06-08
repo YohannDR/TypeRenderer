@@ -482,13 +482,22 @@ bool_t TypeRendererImpl<MemberT, Meta::EnableIf<ContainerDefinition<MemberT>::Fl
     if (!ImGui::CollapsingHeader(metadata.name))
         return false;
 
-    bool changed = false;
+    using AddCallback = Reflection::ContainerAddCallback<ReflectT, ValueType>;
+    constexpr bool_t hasAddCallback = Reflection::HasAttribute<AddCallback, DescriptorT>();
+    
+    bool_t changed = false;
     if constexpr (isMutable)
     {
         if (ImGui::Button("Add element"))
         {
             ItDef::AddElement(metadata.obj);
             changed = true;
+
+            if constexpr (hasAddCallback)
+            {
+                ValueType& last = ItDef::GetElement(metadata.obj, ItDef::GetSize(metadata.obj) - 1);
+                (metadata.topLevelObj->*Reflection::GetAttribute<AddCallback, DescriptorT>().func)(last);
+            }
         }
     }
 
@@ -526,6 +535,11 @@ bool_t TypeRendererImpl<MemberT, Meta::EnableIf<ContainerDefinition<MemberT>::Fl
                 ItDef::Insert(metadata.obj, i);
                 ++listSize;
                 changed = true;
+
+                if constexpr (hasAddCallback)
+                {
+                    (metadata.topLevelObj->*Reflection::GetAttribute<AddCallback, DescriptorT>().func)(ItDef::GetElement(metadata.obj, i));
+                }
             }
                 
             ImGui::PopID();
