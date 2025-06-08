@@ -389,7 +389,10 @@ void TypeRenderer::CheckDisplayTooltip(const Metadata<ReflectT, MemberT, Descrip
 template <typename ReflectT, typename MemberT, typename DescriptorT>
 bool_t TypeRenderer::DisplaySimpleMember(const Metadata<ReflectT, MemberT, DescriptorT>& metadata)
 {
-    return TypeRendererImpl<MemberT>::template Render<ReflectT, DescriptorT>(metadata);
+    ImGui::PushID(metadata.obj);
+    const bool_t changed = TypeRendererImpl<MemberT>::template Render<ReflectT, DescriptorT>(metadata);
+    ImGui::PopID();
+    return changed;
 }
 
 #pragma endregion
