@@ -93,6 +93,11 @@ struct TypeRendererImpl
     static bool_t Render(const TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT>& metadata);
 };
 
+/// @brief Determines if @c MemberT is a trivial type
+/// @tparam MemberT 
+template <typename MemberT>
+constexpr bool_t IsTrivialType = Meta::IsIntegral<MemberT> || Meta::IsSame<MemberT, std::string>;
+
 enum class ItDefFlags
 {
     // No flags
@@ -560,6 +565,12 @@ bool_t TypeRendererImpl<MemberT, Meta::EnableIf<ContainerDefinition<MemberT>::Fl
         }
 
         const std::string name = std::to_string(i);
+        if constexpr (!IsTrivialType<ValueType>)
+        {
+            if (!ImGui::CollapsingHeader(name.c_str()))
+                continue;
+        }
+
         const TypeRenderer::Metadata<ReflectT, ValueType, DescriptorT> elementMetadata = {
             .topLevelObj = metadata.topLevelObj,
             .name = name.c_str(),
@@ -791,9 +802,7 @@ template <typename T0, typename T1>
 template <typename ReflectT, typename DescriptorT>
 bool_t TypeRendererImpl<std::pair<T0, T1>>::Render(const TypeRenderer::Metadata<ReflectT, std::pair<T0, T1>, DescriptorT>& metadata)
 {
-    if (!ImGui::CollapsingHeader(metadata.name))
-        return false;
-
+    ImGui::SeparatorText(metadata.name);
     constexpr bool_t hasCustomNames = Reflection::HasAttribute<Reflection::PairName, DescriptorT>();
 
     const char_t* firstName = "First";
