@@ -26,7 +26,8 @@ public:
     /// @tparam ReflectT Reflected top level type
     /// @tparam MemberT Member type
     /// @tparam DescriptorT Member descriptor type
-    template <typename ReflectT, typename MemberT, typename DescriptorT>
+    /// @tparam Depth Current rendering recursion depth
+    template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth>
     struct Metadata
     {
         /// @brief Reflected top level object
@@ -53,33 +54,33 @@ public:
     /// @tparam DescriptorT Field descriptor type
     /// @param metadata Member metadata
     /// @return bool_t, whether the member changed has been modified
-    template <typename ReflectT, typename MemberT, typename DescriptorT>
-    static bool_t DisplaySimpleMember(const Metadata<ReflectT, MemberT, DescriptorT>& metadata);
+    template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth>
+    static bool_t DisplaySimpleMember(const Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata);
 
 private:
-    template <typename ReflectT, typename MemberT, typename DescriptorT>
-    static Metadata<ReflectT, MemberT, DescriptorT> CreateMetadata(ReflectT* obj);
+    template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth>
+    static Metadata<ReflectT, MemberT, DescriptorT, Depth> CreateMetadata(ReflectT* obj);
 
     template <typename DescriptorT>
     static constexpr const char_t* GetMemberName();
 
-    template <typename ReflectT, typename MemberT, typename DescriptorT>
+    template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth>
     static MemberT* GetMemberPointer(ReflectT* obj);
     
     template <typename ReflectT, bool_t IsStatic>
     static bool_t DisplayMembers(ReflectT* obj);
 
-    template <typename ReflectT, typename MemberT, typename DescriptorT, bool_t IsStatic>
-    static bool_t DisplayField(const Metadata<ReflectT, MemberT, DescriptorT>& metadata, bool_t& hasStatic);
+    template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth, bool_t IsStatic>
+    static bool_t DisplayField(const Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata, bool_t& hasStatic);
 
-    template <typename ReflectT, typename MemberT, typename DescriptorT>
-    static void DisplayFunction(const Metadata<ReflectT, MemberT, DescriptorT>& metadata);
+    template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth>
+    static void DisplayFunction(const Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata);
 
-    template <typename ReflectT, typename MemberT, typename DescriptorT>
-    static void CheckDisplayTooltip(const Metadata<ReflectT, MemberT, DescriptorT>& metadata);
+    template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth>
+    static void CheckDisplayTooltip(const Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata);
 
-    template <typename ReflectT, typename MemberT, typename DescriptorT>
-    static void CheckUpdateStyle(const Metadata<ReflectT, MemberT, DescriptorT>& metadata);
+    template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth>
+    static void CheckUpdateStyle(const Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata);
 };
 
 /// @brief Implementation for a type renderer, template specialization can be used to provide a custom render behavior to a custom type
@@ -92,8 +93,8 @@ struct TypeRendererImpl
     /// @tparam ReflectT Reflected top level type
     /// @tparam DescriptorT Field descriptor type
     /// @param metadata Member metadata
-    template <typename ReflectT, typename DescriptorT>
-    static bool_t Render(const TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT>& metadata);
+    template <typename ReflectT, typename DescriptorT, size_t Depth>
+    static bool_t Render(const TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata);
 };
 
 /// @brief Determines if @c MemberT is a trivial type
@@ -189,27 +190,27 @@ struct ContainerDefinition<std::unordered_map<K, T>>
     static void Remove(PtrType array, const KeyType& key) { array->erase(key); }
 };
 
-#define DEFINE_TYPE_RENDERER_COND(condition)                                                        \
-template <typename MemberT>                                                                         \
-struct TypeRendererImpl<MemberT, Meta::EnableIf<condition>>                                         \
-{                                                                                                   \
-    template <typename ReflectT, typename DescriptorT>                                              \
-    static bool_t Render(const TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT>& metadata);   \
-};
-
-#define DEFINE_TYPE_RENDERER_TYPE(type)                                                         \
-template <>                                                                                     \
-struct TypeRendererImpl<type>                                                                   \
-{                                                                                               \
-    template <typename ReflectT, typename DescriptorT>                                          \
-    static bool_t Render(const TypeRenderer::Metadata<ReflectT, type, DescriptorT>& metadata);  \
-};
-
-#define DEFINE_TYPE_RENDERER_TEMP(...)                                                                  \
-struct TypeRendererImpl<__VA_ARGS__>                                                                    \
+#define DEFINE_TYPE_RENDERER_COND(condition)                                                            \
+template <typename MemberT>                                                                             \
+struct TypeRendererImpl<MemberT, Meta::EnableIf<condition>>                                             \
 {                                                                                                       \
-    template <typename ReflectT, typename DescriptorT>                                                  \
-    static bool_t Render(const TypeRenderer::Metadata<ReflectT, __VA_ARGS__, DescriptorT>& metadata);   \
+    template <typename ReflectT, typename DescriptorT, size_t Depth>                                    \
+    static bool_t Render(const TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata);\
+};
+
+#define DEFINE_TYPE_RENDERER_TYPE(type)                                                                 \
+template <>                                                                                             \
+struct TypeRendererImpl<type>                                                                           \
+{                                                                                                       \
+    template <typename ReflectT, typename DescriptorT, size_t Depth>                                    \
+    static bool_t Render(const TypeRenderer::Metadata<ReflectT, type, DescriptorT, Depth>& metadata);   \
+};
+
+#define DEFINE_TYPE_RENDERER_TEMP(...)                                                                          \
+struct TypeRendererImpl<__VA_ARGS__>                                                                            \
+{                                                                                                               \
+    template <typename ReflectT, typename DescriptorT, size_t Depth>                                            \
+    static bool_t Render(const TypeRenderer::Metadata<ReflectT, __VA_ARGS__, DescriptorT, Depth>& metadata);    \
 };
 
 DEFINE_TYPE_RENDERER_COND(Meta::IsIntegralNumericOrFloating<MemberT>)
@@ -246,13 +247,13 @@ bool_t TypeRenderer::RenderType(ReflectT* const obj, const bool_t inWindow)
     return changed;
 }
 
-template <typename ReflectT, typename MemberT, typename DescriptorT>
-TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT> TypeRenderer::CreateMetadata(ReflectT* const obj)
+template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth>
+TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT, Depth> TypeRenderer::CreateMetadata(ReflectT* const obj)
 {
-    const Metadata<ReflectT, MemberT, DescriptorT> metadata = {
+    const Metadata<ReflectT, MemberT, DescriptorT, Depth> metadata = {
         .topLevelObj = obj,
         .name = GetMemberName<DescriptorT>(),
-        .obj = GetMemberPointer<ReflectT, MemberT, DescriptorT>(obj)
+        .obj = GetMemberPointer<ReflectT, MemberT, DescriptorT, Depth>(obj)
     };
 
     return metadata;
@@ -267,7 +268,7 @@ constexpr const char_t* TypeRenderer::GetMemberName()
     return DescriptorT::name.c_str();
 }
 
-template <typename ReflectT, typename MemberT, typename DescriptorT>
+template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth>
 MemberT* TypeRenderer::GetMemberPointer(MAYBE_UNUSED ReflectT* const obj)
 {
     if constexpr (Reflection::IsFunction<DescriptorT>)
@@ -292,16 +293,16 @@ bool_t TypeRenderer::DisplayMembers(ReflectT* const obj)
     {
         using MemberT = Reflection::GetMemberT<DescriptorT>;
 
-        const Metadata<ReflectT, MemberT, DescriptorT> metadata = CreateMetadata<ReflectT, MemberT, DescriptorT>(obj);
+        const Metadata<ReflectT, MemberT, DescriptorT, 0> metadata = CreateMetadata<ReflectT, MemberT, DescriptorT, 0>(obj);
 
         if constexpr (Reflection::IsFunction<DescriptorT>)
         {
             if constexpr (!IsStatic)
-                DisplayFunction<ReflectT, MemberT, DescriptorT>(metadata);
+                DisplayFunction<ReflectT, MemberT, DescriptorT, 0>(metadata);
         }
         else
         {
-            anyChanged |= DisplayField<ReflectT, MemberT, DescriptorT, IsStatic>(metadata, hasStatic);
+            anyChanged |= DisplayField<ReflectT, MemberT, DescriptorT, 0, IsStatic>(metadata, hasStatic);
         }
 
         CheckDisplayTooltip(metadata);
@@ -318,8 +319,8 @@ bool_t TypeRenderer::DisplayMembers(ReflectT* const obj)
     return anyChanged;
 }
 
-template <typename ReflectT, typename MemberT, typename DescriptorT, bool_t IsStatic>
-bool_t TypeRenderer::DisplayField(const Metadata<ReflectT, MemberT, DescriptorT>& metadata, bool_t& hasStatic)
+template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth, bool_t IsStatic>
+bool_t TypeRenderer::DisplayField(const Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata, bool_t& hasStatic)
 {
     // Shorthand for the templated attributes
     using NotifyChangeT = Reflection::NotifyChange<ReflectT>;
@@ -370,8 +371,8 @@ bool_t TypeRenderer::DisplayField(const Metadata<ReflectT, MemberT, DescriptorT>
     return changed;
 }
 
-template <typename ReflectT, typename MemberT, typename DescriptorT>
-void TypeRenderer::DisplayFunction(const Metadata<ReflectT, MemberT, DescriptorT>& metadata)
+template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth>
+void TypeRenderer::DisplayFunction(const Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata)
 {
     ImGui::PushID(metadata.obj);
     CheckUpdateStyle(metadata);
@@ -382,8 +383,8 @@ void TypeRenderer::DisplayFunction(const Metadata<ReflectT, MemberT, DescriptorT
     ImGui::PopID();
 }
 
-template <typename ReflectT, typename MemberT, typename DescriptorT>
-void TypeRenderer::CheckDisplayTooltip(const Metadata<ReflectT, MemberT, DescriptorT>& metadata)
+template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth>
+void TypeRenderer::CheckDisplayTooltip(const Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata)
 {
     using DynamicTooltip = Reflection::DynamicTooltip<ReflectT>;
     
@@ -404,10 +405,10 @@ void TypeRenderer::CheckDisplayTooltip(const Metadata<ReflectT, MemberT, Descrip
     }
 }
 
-template <typename ReflectT, typename MemberT, typename DescriptorT>
-void TypeRenderer::CheckUpdateStyle(const Metadata<ReflectT, MemberT, DescriptorT>& metadata)
+template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth>
+void TypeRenderer::CheckUpdateStyle(const Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata)
 {
-    if constexpr (Reflection::HasAttribute<Reflection::PaddingY, DescriptorT>())
+    if constexpr (Reflection::HasAttribute<Reflection::PaddingY, DescriptorT>() && Depth == 0)
     {
         ImGui::Dummy(ImVec2(0.f, Reflection::GetAttribute<Reflection::PaddingY, DescriptorT>().value));
     }
@@ -419,8 +420,8 @@ void TypeRenderer::CheckUpdateStyle(const Metadata<ReflectT, MemberT, Descriptor
     }
 }
 
-template <typename ReflectT, typename MemberT, typename DescriptorT>
-bool_t TypeRenderer::DisplaySimpleMember(const Metadata<ReflectT, MemberT, DescriptorT>& metadata)
+template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth>
+bool_t TypeRenderer::DisplaySimpleMember(const Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata)
 {
     ImGui::PushID(metadata.obj);
     CheckUpdateStyle(metadata);
@@ -434,8 +435,8 @@ bool_t TypeRenderer::DisplaySimpleMember(const Metadata<ReflectT, MemberT, Descr
 #pragma region Type implementation
 
 template <typename MemberT, typename Condition>
-template <typename ReflectT, typename DescriptorT>
-bool_t TypeRendererImpl<MemberT, Condition>::Render(const TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT>& metadata)
+template <typename ReflectT, typename DescriptorT, size_t Depth>
+bool_t TypeRendererImpl<MemberT, Condition>::Render(const TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata)
 {
     if constexpr (Reflection::IsReflected<MemberT>)
     {
@@ -449,8 +450,8 @@ bool_t TypeRendererImpl<MemberT, Condition>::Render(const TypeRenderer::Metadata
 }
 
 template <typename MemberT>
-template <typename ReflectT, typename DescriptorT>
-bool_t TypeRendererImpl<MemberT, Meta::EnableIf<Meta::IsIntegralNumericOrFloating<MemberT>>>::Render(const TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT>& metadata)
+template <typename ReflectT, typename DescriptorT, size_t Depth>
+bool_t TypeRendererImpl<MemberT, Meta::EnableIf<Meta::IsIntegralNumericOrFloating<MemberT>>>::Render(const TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata)
 {
     uint32_t type;
 
@@ -508,8 +509,8 @@ bool_t TypeRendererImpl<MemberT, Meta::EnableIf<Meta::IsIntegralNumericOrFloatin
 }
 
 template <typename MemberT>
-template <typename ReflectT, typename DescriptorT>
-bool_t TypeRendererImpl<MemberT, Meta::EnableIf<ContainerDefinition<MemberT>::Flags & ItDefFlags::Exists && !(ContainerDefinition<MemberT>::Flags & ItDefFlags::KeyValuePair)>>::Render(const TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT>& metadata)
+template <typename ReflectT, typename DescriptorT, size_t Depth>
+bool_t TypeRendererImpl<MemberT, Meta::EnableIf<ContainerDefinition<MemberT>::Flags & ItDefFlags::Exists && !(ContainerDefinition<MemberT>::Flags & ItDefFlags::KeyValuePair)>>::Render(const TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata)
 {
     using ItDef = ContainerDefinition<MemberT>;
     using ValueType = typename ItDef::ValueType;
@@ -541,8 +542,6 @@ bool_t TypeRendererImpl<MemberT, Meta::EnableIf<ContainerDefinition<MemberT>::Fl
     size_t listSize = ItDef::GetSize(metadata.obj);
     for (size_t i = 0; i < listSize; i++)
     {
-        ValueType& v = ItDef::GetElement(metadata.obj, i);
-
         if constexpr (isMutable)
         {
             ImGui::PushID(&i + i);
@@ -583,6 +582,7 @@ bool_t TypeRendererImpl<MemberT, Meta::EnableIf<ContainerDefinition<MemberT>::Fl
             ImGui::SameLine();
         }
 
+        ValueType& v = ItDef::GetElement(metadata.obj, i);
         const std::string name = std::to_string(i);
         if constexpr (!IsTrivialType<ValueType>)
         {
@@ -590,7 +590,7 @@ bool_t TypeRendererImpl<MemberT, Meta::EnableIf<ContainerDefinition<MemberT>::Fl
                 continue;
         }
 
-        const TypeRenderer::Metadata<ReflectT, ValueType, DescriptorT> elementMetadata = {
+        const TypeRenderer::Metadata<ReflectT, ValueType, DescriptorT, Depth + 1> elementMetadata = {
             .topLevelObj = metadata.topLevelObj,
             .name = name.c_str(),
             .obj = &v,
@@ -603,8 +603,8 @@ bool_t TypeRendererImpl<MemberT, Meta::EnableIf<ContainerDefinition<MemberT>::Fl
 }
 
 template <typename MemberT>
-template <typename ReflectT, typename DescriptorT>
-bool_t TypeRendererImpl<MemberT, Meta::EnableIf<ContainerDefinition<MemberT>::Flags & ItDefFlags::Exists && ContainerDefinition<MemberT>::Flags & ItDefFlags::KeyValuePair>>::Render(const TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT>& metadata)
+template <typename ReflectT, typename DescriptorT, size_t Depth>
+bool_t TypeRendererImpl<MemberT, Meta::EnableIf<ContainerDefinition<MemberT>::Flags & ItDefFlags::Exists && ContainerDefinition<MemberT>::Flags & ItDefFlags::KeyValuePair>>::Render(const TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata)
 {
     using ItDef = ContainerDefinition<MemberT>;
     using KeyType = typename ItDef::KeyType;
@@ -649,13 +649,13 @@ bool_t TypeRendererImpl<MemberT, Meta::EnableIf<ContainerDefinition<MemberT>::Fl
         ValueType valueDupe = oldValue;
 
         const std::string name = std::to_string(i);
-        const TypeRenderer::Metadata<ReflectT, KeyType, DescriptorT> keyMetadata = {
+        const TypeRenderer::Metadata<ReflectT, KeyType, DescriptorT, Depth + 1> keyMetadata = {
             .topLevelObj = metadata.topLevelObj,
             .name = "",
             .obj = &keyDupe,
         };
 
-        const TypeRenderer::Metadata<ReflectT, ValueType, DescriptorT> valueMetadata = {
+        const TypeRenderer::Metadata<ReflectT, ValueType, DescriptorT, Depth + 1> valueMetadata = {
             .topLevelObj = metadata.topLevelObj,
             .name = name.c_str(),
             .obj = &valueDupe,
@@ -705,21 +705,21 @@ bool_t TypeRendererImpl<MemberT, Meta::EnableIf<ContainerDefinition<MemberT>::Fl
 }
 
 
-template <typename ReflectT, typename DescriptorT>
-bool_t TypeRendererImpl<bool_t>::Render(const TypeRenderer::Metadata<ReflectT, bool_t, DescriptorT>& metadata)
+template <typename ReflectT, typename DescriptorT, size_t Depth>
+bool_t TypeRendererImpl<bool_t>::Render(const TypeRenderer::Metadata<ReflectT, bool_t, DescriptorT, Depth>& metadata)
 {
     return ImGui::Checkbox(metadata.name, metadata.obj);
 }
 
-template <typename ReflectT, typename DescriptorT>
-bool_t TypeRendererImpl<std::string>::Render(const TypeRenderer::Metadata<ReflectT, std::string, DescriptorT>& metadata)
+template <typename ReflectT, typename DescriptorT, size_t Depth>
+bool_t TypeRendererImpl<std::string>::Render(const TypeRenderer::Metadata<ReflectT, std::string, DescriptorT, Depth>& metadata)
 {
     return ImGui::InputText(metadata.name, metadata.obj);
 }
 
 template <typename MemberT>
-template <typename ReflectT, typename DescriptorT>
-bool_t TypeRendererImpl<MemberT, Meta::EnableIf<Meta::IsEnum<MemberT>>>::Render(const TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT>& metadata)
+template <typename ReflectT, typename DescriptorT, size_t Depth>
+bool_t TypeRendererImpl<MemberT, Meta::EnableIf<Meta::IsEnum<MemberT>>>::Render(const TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata)
 {
     // Get an array of the enum names
     constexpr auto enumNames = magic_enum::enum_names<MemberT>();
@@ -818,12 +818,14 @@ bool_t TypeRendererImpl<MemberT, Meta::EnableIf<Meta::IsEnum<MemberT>>>::Render(
 }
 
 template <typename T0, typename T1>
-template <typename ReflectT, typename DescriptorT>
-bool_t TypeRendererImpl<std::pair<T0, T1>>::Render(const TypeRenderer::Metadata<ReflectT, std::pair<T0, T1>, DescriptorT>& metadata)
+template <typename ReflectT, typename DescriptorT, size_t Depth>
+bool_t TypeRendererImpl<std::pair<T0, T1>>::Render(const TypeRenderer::Metadata<ReflectT, std::pair<T0, T1>, DescriptorT, Depth>& metadata)
 {
     ImGui::SeparatorText(metadata.name);
     constexpr bool_t hasCustomNames = Reflection::HasAttribute<Reflection::PairName, DescriptorT>();
 
+    constexpr size_t elementDepth = Depth + 1;
+    
     const char_t* firstName = "First";
     if constexpr (hasCustomNames)
         firstName = Reflection::GetAttribute<Reflection::PairName, DescriptorT>().firstName;
@@ -833,19 +835,19 @@ bool_t TypeRendererImpl<std::pair<T0, T1>>::Render(const TypeRenderer::Metadata<
         secondName = Reflection::GetAttribute<Reflection::PairName, DescriptorT>().secondName;
 
     bool_t changed = false;
-    const TypeRenderer::Metadata<ReflectT, T0, DescriptorT> metadata0 = {
+    const TypeRenderer::Metadata<ReflectT, T0, DescriptorT, elementDepth> metadata0 = {
         .topLevelObj = metadata.topLevelObj,
         .name = firstName,
         .obj = &metadata.obj->first
     };
-    const TypeRenderer::Metadata<ReflectT, T1, DescriptorT> metadata1 = {
+    const TypeRenderer::Metadata<ReflectT, T1, DescriptorT, elementDepth> metadata1 = {
         .topLevelObj = metadata.topLevelObj,
         .name = secondName,
         .obj = &metadata.obj->second
     };
 
-    changed |= TypeRenderer::DisplaySimpleMember<ReflectT, T0, DescriptorT>(metadata0);
-    changed |= TypeRenderer::DisplaySimpleMember<ReflectT, T1, DescriptorT>(metadata1);
+    changed |= TypeRenderer::DisplaySimpleMember(metadata0);
+    changed |= TypeRenderer::DisplaySimpleMember(metadata1);
     return changed;
 }
 

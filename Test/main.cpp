@@ -115,7 +115,7 @@ int main(int, char*[])
         // TypeRenderer::RenderType(&rangeExample, true);
         // TypeRenderer::RenderType(&enumExample, true);
         // TypeRenderer::RenderType(&callbacksExample, true);
-        // TypeRenderer::RenderType(&containersExample, true);
+        TypeRenderer::RenderType(&containersExample, true);
         // TypeRenderer::RenderType(&tooltipExample, true);
         // TypeRenderer::RenderType(&customExample, true);
         // TypeRenderer::RenderType(&nestingExample, true);

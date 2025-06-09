@@ -38,7 +38,7 @@ REFL_AUTO(
     type(ContainersExample),
 
     field(vector, Reflection::ContainerAddCallback(&ContainersExample::AddedElement)),
-    field(array),
+    field(array, Reflection::PaddingY(20.f), Reflection::PaddingX(20.f)),
     field(cArray),
     field(arrayStruct),
     field(arrayPair)

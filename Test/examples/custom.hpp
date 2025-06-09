@@ -13,8 +13,8 @@ public:
 DEFINE_TYPE_RENDERER_TYPE(CustomVector2)
 
 // Then define it, and render it however you want
-template <typename ReflectT, typename DescriptorT>
-bool_t TypeRendererImpl<CustomVector2>::Render(const TypeRenderer::Metadata<ReflectT, CustomVector2, DescriptorT>& metadata)
+template <typename ReflectT, typename DescriptorT, size_t Depth>
+bool_t TypeRendererImpl<CustomVector2>::Render(const TypeRenderer::Metadata<ReflectT, CustomVector2, DescriptorT, Depth>& metadata)
 {
     return ImGui::DragFloat2(metadata.name, &metadata.obj->x);
 }
