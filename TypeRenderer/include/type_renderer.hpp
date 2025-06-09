@@ -794,15 +794,25 @@ bool_t TypeRendererImpl<std::pair<T0, T1>>::Render(const TypeRenderer::Metadata<
     if (!ImGui::CollapsingHeader(metadata.name))
         return false;
 
+    constexpr bool_t hasCustomNames = Reflection::HasAttribute<Reflection::PairName, DescriptorT>();
+
+    const char_t* firstName = "First";
+    if constexpr (hasCustomNames)
+        firstName = Reflection::GetAttribute<Reflection::PairName, DescriptorT>().firstName;
+
+    const char_t* secondName = "Second";
+    if constexpr (hasCustomNames)
+        secondName = Reflection::GetAttribute<Reflection::PairName, DescriptorT>().secondName;
+    
     bool_t changed = false;
     const TypeRenderer::Metadata<ReflectT, T0, DescriptorT> metadata0 = {
         .topLevelObj = metadata.topLevelObj,
-        .name = "First",
+        .name = firstName,
         .obj = &metadata.obj->first
     };
     const TypeRenderer::Metadata<ReflectT, T1, DescriptorT> metadata1 = {
         .topLevelObj = metadata.topLevelObj,
-        .name = "Second",
+        .name = secondName,
         .obj = &metadata.obj->second
     };
 

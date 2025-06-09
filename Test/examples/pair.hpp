@@ -13,7 +13,7 @@ public:
 REFL_AUTO(
     type(PairExample),
 
-    field(pair1),
+    field(pair1, Reflection::PairName("This is a float", "This is a size_t")),
     field(pair2),
     field(pair3)
 );

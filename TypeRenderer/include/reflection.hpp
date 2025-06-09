@@ -188,6 +188,7 @@ namespace Reflection
     {
     };
 
+
     /// @brief Allows a callback to be called when adding an element to a container
     /// @tparam ReflectT Top level reflected type
     /// @tparam ArrayT Array element type
@@ -201,6 +202,21 @@ namespace Reflection
         constexpr explicit ContainerAddCallback(const FuncT callback) : func(callback) {}
     };
 
+    /// @brief Allows to add custom names to the elements of an std::pair
+    struct PairName : FieldAttribute
+    {
+        /// @brief Name of the first element
+        const char_t* firstName;
+        /// @brief Name of the second element
+        const char_t* secondName;
+
+        /// @brief Creates a pair name from string literals
+        /// @param f First element name
+        /// @param s Second element name
+        constexpr explicit PairName(const char_t* const f, const char_t* const s) : firstName(f), secondName(s) {}
+    };
+
+    
     /// @brief Allows a tooltip to be bound to a member
     struct Tooltip : MemberAttribute
     {
