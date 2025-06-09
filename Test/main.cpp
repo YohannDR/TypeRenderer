@@ -17,6 +17,7 @@
 #include "examples/nesting.hpp"
 #include "examples/pair.hpp"
 #include "examples/range.hpp"
+#include "examples/styling.hpp"
 #include "examples/tooltip.hpp"
 
 namespace
@@ -104,6 +105,7 @@ int main(int, char*[])
     MAYBE_UNUSED CustomExample customExample;
     MAYBE_UNUSED NestingExample nestingExample;
     MAYBE_UNUSED PairExample pairExample;
+    MAYBE_UNUSED StylingExample stylingExample;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -118,6 +120,7 @@ int main(int, char*[])
         // TypeRenderer::RenderType(&customExample, true);
         // TypeRenderer::RenderType(&nestingExample, true);
         // TypeRenderer::RenderType(&pairExample, true);
+        // TypeRenderer::RenderType(&stylingExample, true);
 
         PostLoop();
     }

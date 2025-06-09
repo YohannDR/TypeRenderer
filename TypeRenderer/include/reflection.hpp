@@ -254,4 +254,26 @@ namespace Reflection
         /// @param t Tooltip text
         constexpr explicit CustomName(const char_t* const t) : text(t) {}
     };
+
+    /// @brief Adds a padding before the element (on the left)
+    struct PaddingX : MemberAttribute
+    {
+        /// @brief Padding X value
+        float_t value;
+
+        /// @brief Creates a padding X object
+        /// @param x Value
+        constexpr explicit PaddingX(const float_t x) : value(x) {}
+    };
+
+    /// @brief Adds a padding before the element (on the top)
+    struct PaddingY : MemberAttribute
+    {
+        /// @brief Padding Y value
+        float_t value;
+
+        /// @brief Creates a padding Y object
+        /// @param y Value
+        constexpr explicit PaddingY(const float_t y) : value(y) {}
+    };
 }

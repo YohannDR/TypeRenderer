@@ -77,6 +77,9 @@ private:
 
     template <typename ReflectT, typename MemberT, typename DescriptorT>
     static void CheckDisplayTooltip(const Metadata<ReflectT, MemberT, DescriptorT>& metadata);
+
+    template <typename ReflectT, typename MemberT, typename DescriptorT>
+    static void CheckUpdateStyle(const Metadata<ReflectT, MemberT, DescriptorT>& metadata);
 };
 
 /// @brief Implementation for a type renderer, template specialization can be used to provide a custom render behavior to a custom type
@@ -96,7 +99,7 @@ struct TypeRendererImpl
 /// @brief Determines if @c MemberT is a trivial type
 /// @tparam MemberT 
 template <typename MemberT>
-constexpr bool_t IsTrivialType = Meta::IsIntegral<MemberT> || Meta::IsSame<MemberT, std::string>;
+constexpr bool_t IsTrivialType = Meta::IsIntegral<MemberT> || Meta::IsFloatingPoint<MemberT> || Meta::IsSame<MemberT, std::string>;
 
 enum class ItDefFlags
 {
@@ -290,7 +293,7 @@ bool_t TypeRenderer::DisplayMembers(ReflectT* const obj)
         using MemberT = Reflection::GetMemberT<DescriptorT>;
 
         const Metadata<ReflectT, MemberT, DescriptorT> metadata = CreateMetadata<ReflectT, MemberT, DescriptorT>(obj);
-        
+
         if constexpr (Reflection::IsFunction<DescriptorT>)
         {
             if constexpr (!IsStatic)
@@ -300,6 +303,8 @@ bool_t TypeRenderer::DisplayMembers(ReflectT* const obj)
         {
             anyChanged |= DisplayField<ReflectT, MemberT, DescriptorT, IsStatic>(metadata, hasStatic);
         }
+
+        CheckDisplayTooltip(metadata);
     });
 
     if constexpr (IsStatic)
@@ -342,10 +347,7 @@ bool_t TypeRenderer::DisplayField(const Metadata<ReflectT, MemberT, DescriptorT>
     if constexpr (display)
     {
         ImGui::BeginDisabled(isConst || readOnly);
-        ImGui::PushID(metadata.obj);
         changed = DisplaySimpleMember<ReflectT, MemberT, DescriptorT>(metadata);
-        CheckDisplayTooltip(metadata);
-        ImGui::PopID();
 
         if (changed)
         {
@@ -371,12 +373,13 @@ bool_t TypeRenderer::DisplayField(const Metadata<ReflectT, MemberT, DescriptorT>
 template <typename ReflectT, typename MemberT, typename DescriptorT>
 void TypeRenderer::DisplayFunction(const Metadata<ReflectT, MemberT, DescriptorT>& metadata)
 {
+    ImGui::PushID(metadata.obj);
+    CheckUpdateStyle(metadata);
     if (ImGui::Button(metadata.name))
     {
-        (metadata.topLevelObj->*(*metadata.obj))();
+        (metadata.topLevelObj->**metadata.obj)();
     }
-
-    CheckDisplayTooltip(metadata);
+    ImGui::PopID();
 }
 
 template <typename ReflectT, typename MemberT, typename DescriptorT>
@@ -402,9 +405,25 @@ void TypeRenderer::CheckDisplayTooltip(const Metadata<ReflectT, MemberT, Descrip
 }
 
 template <typename ReflectT, typename MemberT, typename DescriptorT>
+void TypeRenderer::CheckUpdateStyle(const Metadata<ReflectT, MemberT, DescriptorT>& metadata)
+{
+    if constexpr (Reflection::HasAttribute<Reflection::PaddingY, DescriptorT>())
+    {
+        ImGui::Dummy(ImVec2(0.f, Reflection::GetAttribute<Reflection::PaddingY, DescriptorT>().value));
+    }
+
+    if constexpr (Reflection::HasAttribute<Reflection::PaddingX, DescriptorT>())
+    {
+        ImGui::Dummy(ImVec2(Reflection::GetAttribute<Reflection::PaddingX, DescriptorT>().value, 0));
+        ImGui::SameLine();
+    }
+}
+
+template <typename ReflectT, typename MemberT, typename DescriptorT>
 bool_t TypeRenderer::DisplaySimpleMember(const Metadata<ReflectT, MemberT, DescriptorT>& metadata)
 {
     ImGui::PushID(metadata.obj);
+    CheckUpdateStyle(metadata);
     const bool_t changed = TypeRendererImpl<MemberT>::template Render<ReflectT, DescriptorT>(metadata);
     ImGui::PopID();
     return changed;
@@ -812,7 +831,7 @@ bool_t TypeRendererImpl<std::pair<T0, T1>>::Render(const TypeRenderer::Metadata<
     const char_t* secondName = "Second";
     if constexpr (hasCustomNames)
         secondName = Reflection::GetAttribute<Reflection::PairName, DescriptorT>().secondName;
-    
+
     bool_t changed = false;
     const TypeRenderer::Metadata<ReflectT, T0, DescriptorT> metadata0 = {
         .topLevelObj = metadata.topLevelObj,
