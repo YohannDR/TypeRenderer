@@ -15,6 +15,7 @@
 #include "examples/custom.hpp"
 #include "examples/enums.hpp"
 #include "examples/nesting.hpp"
+#include "examples/pair.hpp"
 #include "examples/range.hpp"
 #include "examples/tooltip.hpp"
 
@@ -102,19 +103,21 @@ int main(int, char*[])
     MAYBE_UNUSED TooltipExample tooltipExample;
     MAYBE_UNUSED CustomExample customExample;
     MAYBE_UNUSED NestingExample nestingExample;
+    MAYBE_UNUSED PairExample pairExample;
 
     while (!glfwWindowShouldClose(window))
     {
         PreLoop();
 
-        TypeRenderer::RenderType(&baseTypesExample, true);
-        TypeRenderer::RenderType(&rangeExample, true);
-        TypeRenderer::RenderType(&enumExample, true);
-        TypeRenderer::RenderType(&callbacksExample, true);
-        TypeRenderer::RenderType(&containersExample, true);
-        TypeRenderer::RenderType(&tooltipExample, true);
-        TypeRenderer::RenderType(&customExample, true);
-        TypeRenderer::RenderType(&nestingExample, true);
+        // TypeRenderer::RenderType(&baseTypesExample, true);
+        // TypeRenderer::RenderType(&rangeExample, true);
+        // TypeRenderer::RenderType(&enumExample, true);
+        // TypeRenderer::RenderType(&callbacksExample, true);
+        // TypeRenderer::RenderType(&containersExample, true);
+        // TypeRenderer::RenderType(&tooltipExample, true);
+        // TypeRenderer::RenderType(&customExample, true);
+        // TypeRenderer::RenderType(&nestingExample, true);
+        // TypeRenderer::RenderType(&pairExample, true);
 
         PostLoop();
     }

@@ -180,6 +180,7 @@
     <ClInclude Include="examples\custom.hpp" />
     <ClInclude Include="examples\enums.hpp" />
     <ClInclude Include="examples\nesting.hpp" />
+    <ClInclude Include="examples\pair.hpp" />
     <ClInclude Include="examples\range.hpp" />
     <ClInclude Include="examples\tooltip.hpp" />
     <ClInclude Include="glad.h" />

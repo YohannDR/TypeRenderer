@@ -187,7 +187,7 @@ struct TypeRendererImpl<MemberT, Meta::EnableIf<condition>>                     
 {                                                                                                   \
     template <typename ReflectT, typename DescriptorT>                                              \
     static bool_t Render(const TypeRenderer::Metadata<ReflectT, MemberT, DescriptorT>& metadata);   \
-};                                                                                                  \
+};
 
 #define DEFINE_TYPE_RENDERER_TYPE(type)                                                         \
 template <>                                                                                     \
@@ -195,7 +195,14 @@ struct TypeRendererImpl<type>                                                   
 {                                                                                               \
     template <typename ReflectT, typename DescriptorT>                                          \
     static bool_t Render(const TypeRenderer::Metadata<ReflectT, type, DescriptorT>& metadata);  \
-};    
+};
+
+#define DEFINE_TYPE_RENDERER_TEMP(...)                                                                  \
+struct TypeRendererImpl<__VA_ARGS__>                                                                    \
+{                                                                                                       \
+    template <typename ReflectT, typename DescriptorT>                                                  \
+    static bool_t Render(const TypeRenderer::Metadata<ReflectT, __VA_ARGS__, DescriptorT>& metadata);   \
+};
 
 DEFINE_TYPE_RENDERER_COND(Meta::IsIntegralNumericOrFloating<MemberT>)
 DEFINE_TYPE_RENDERER_COND(Meta::IsEnum<MemberT>)
@@ -204,6 +211,9 @@ DEFINE_TYPE_RENDERER_COND(ContainerDefinition<MemberT>::Flags & ItDefFlags::Exis
 
 DEFINE_TYPE_RENDERER_TYPE(bool_t)
 DEFINE_TYPE_RENDERER_TYPE(std::string)
+
+template <typename T0, typename T1>
+DEFINE_TYPE_RENDERER_TEMP(std::pair<T0, T1>)
 
 #pragma endregion
 
@@ -776,5 +786,30 @@ bool_t TypeRendererImpl<MemberT, Meta::EnableIf<Meta::IsEnum<MemberT>>>::Render(
         return ImGui::Combo(metadata.name, reinterpret_cast<int32_t*>(metadata.obj), getter, names, static_cast<int32_t>(enumNames.size()));
     }
 }
+
+template <typename T0, typename T1>
+template <typename ReflectT, typename DescriptorT>
+bool_t TypeRendererImpl<std::pair<T0, T1>>::Render(const TypeRenderer::Metadata<ReflectT, std::pair<T0, T1>, DescriptorT>& metadata)
+{
+    if (!ImGui::CollapsingHeader(metadata.name))
+        return false;
+
+    bool_t changed = false;
+    const TypeRenderer::Metadata<ReflectT, T0, DescriptorT> metadata0 = {
+        .topLevelObj = metadata.topLevelObj,
+        .name = "First",
+        .obj = &metadata.obj->first
+    };
+    const TypeRenderer::Metadata<ReflectT, T1, DescriptorT> metadata1 = {
+        .topLevelObj = metadata.topLevelObj,
+        .name = "Second",
+        .obj = &metadata.obj->second
+    };
+
+    changed |= TypeRenderer::DisplaySimpleMember<ReflectT, T0, DescriptorT>(metadata0);
+    changed |= TypeRenderer::DisplaySimpleMember<ReflectT, T1, DescriptorT>(metadata1);
+    return changed;
+}
+
 
 #pragma endregion
