@@ -239,8 +239,28 @@ bool_t TypeRenderer::RenderType(ReflectT* const obj, const bool_t inWindow)
             return false;
         }
     }
-    
+
     const bool_t changed = DisplayMembers<ReflectT, false>(obj) || DisplayMembers<ReflectT, true>(obj);
+    
+    if (changed)
+    {
+        using NotifyChangeT = Reflection::NotifyChange<ReflectT>;
+        using ModifiedCallbackT = Reflection::ModifiedCallback<ReflectT>;
+        using DescriptorT = decltype(Reflection::GetTypeInfo<ReflectT>());
+
+        if constexpr (Reflection::HasAttribute<NotifyChangeT, DescriptorT>())
+        {
+            // Value was changed, set the pointer to true
+            constexpr NotifyChangeT notify = Reflection::GetAttribute<NotifyChangeT, DescriptorT>();
+            obj->*notify.pointer = true;
+        }
+
+        if constexpr (Reflection::HasAttribute<ModifiedCallbackT, DescriptorT>())
+        {
+            constexpr ModifiedCallbackT notify = Reflection::GetAttribute<ModifiedCallbackT, DescriptorT>();
+            notify.callback(obj);
+        }
+    }
 
     if (inWindow)
         ImGui::End();
@@ -358,7 +378,8 @@ bool_t TypeRenderer::DisplayField(const Metadata<ReflectT, MemberT, DescriptorT,
                 constexpr NotifyChangeT notify = Reflection::GetAttribute<NotifyChangeT, DescriptorT>();
                 metadata.topLevelObj->*notify.pointer = true;
             }
-            else if constexpr (Reflection::HasAttribute<ModifiedCallbackT, DescriptorT>())
+
+            if constexpr (Reflection::HasAttribute<ModifiedCallbackT, DescriptorT>())
             {
                 constexpr ModifiedCallbackT notify = Reflection::GetAttribute<ModifiedCallbackT, DescriptorT>();
                 notify.callback(metadata.topLevelObj);
@@ -406,7 +427,7 @@ void TypeRenderer::CheckDisplayTooltip(const Metadata<ReflectT, MemberT, Descrip
 }
 
 template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth>
-void TypeRenderer::CheckUpdateStyle(const Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata)
+void TypeRenderer::CheckUpdateStyle(const Metadata<ReflectT, MemberT, DescriptorT, Depth>&)
 {
     if constexpr (Reflection::HasAttribute<Reflection::PaddingY, DescriptorT>() && Depth == 0)
     {

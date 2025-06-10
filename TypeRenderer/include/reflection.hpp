@@ -152,7 +152,7 @@ namespace Reflection
     /// @brief Allows a boolean to be set to true when the field is modified
     /// @tparam ReflectT Parent type
     template <typename ReflectT>
-    struct NotifyChange : FieldAttribute
+    struct NotifyChange : FieldAttribute, TypeAttribute
     {
         /// @brief Shorthand for a class member pointer
         using PtrType = bool_t ReflectT::*;
@@ -168,7 +168,7 @@ namespace Reflection
     /// @brief Allows a callback to be called when a element of object is modified
     /// @tparam ReflectT Parent type
     template <typename ReflectT>
-    struct ModifiedCallback : FieldAttribute
+    struct ModifiedCallback : FieldAttribute, TypeAttribute
     {
         using Type = void(*)(ReflectT*);
 
