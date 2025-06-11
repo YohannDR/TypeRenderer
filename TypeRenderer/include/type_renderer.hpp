@@ -80,7 +80,7 @@ private:
     static void CheckDisplayTooltip(const Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata);
 
     template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth>
-    static void CheckUpdateStyle(const Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata);
+    _NODISCARD static std::pair<int32_t, int32_t> CheckUpdateStyle(const Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata);
 };
 
 /// @brief Implementation for a type renderer, template specialization can be used to provide a custom render behavior to a custom type
@@ -396,11 +396,15 @@ template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Dept
 void TypeRenderer::DisplayFunction(const Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata)
 {
     ImGui::PushID(metadata.obj);
-    CheckUpdateStyle(metadata);
+    const std::pair<int32_t, int32_t> styleInfo = CheckUpdateStyle(metadata);
+
     if (ImGui::Button(metadata.name))
     {
         (metadata.topLevelObj->**metadata.obj)();
     }
+
+    ImGui::PopStyleColor(styleInfo.first);
+    ImGui::PopStyleVar(styleInfo.second);
     ImGui::PopID();
 }
 
@@ -427,27 +431,81 @@ void TypeRenderer::CheckDisplayTooltip(const Metadata<ReflectT, MemberT, Descrip
 }
 
 template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth>
-void TypeRenderer::CheckUpdateStyle(const Metadata<ReflectT, MemberT, DescriptorT, Depth>&)
+std::pair<int32_t, int32_t> TypeRenderer::CheckUpdateStyle(const Metadata<ReflectT, MemberT, DescriptorT, Depth>&)
 {
+    // This is needed because we need to pop things afterwards
+    std::pair<int32_t, int32_t> styleInfo;
+
+    // Vertical padding
     if constexpr (Reflection::HasAttribute<Reflection::PaddingY, DescriptorT>() && Depth == 0)
     {
         ImGui::Dummy(ImVec2(0.f, Reflection::GetAttribute<Reflection::PaddingY, DescriptorT>().value));
     }
 
+    // Horizontal padding
     if constexpr (Reflection::HasAttribute<Reflection::PaddingX, DescriptorT>())
     {
         ImGui::Dummy(ImVec2(Reflection::GetAttribute<Reflection::PaddingX, DescriptorT>().value, 0));
         ImGui::SameLine();
     }
+
+    // Apply color styles
+    if constexpr (Reflection::HasAttribute<Reflection::StyleColor, DescriptorT>())
+    {
+        constexpr Reflection::StyleColor styleColor = Reflection::GetAttribute<Reflection::StyleColor, DescriptorT>();
+        for (size_t i = 0; i < styleColor.values.size(); i++)
+        {
+            if (styleColor.values[i].has_value())
+            {
+                ImGui::PushStyleColor(static_cast<int32_t>(i), styleColor.values[i].value());
+                styleInfo.first++;
+            }
+        }
+    }
+
+    // Apply float var styles
+    if constexpr (Reflection::HasAttribute<Reflection::StyleVar<float_t>, DescriptorT>())
+    {
+        constexpr Reflection::StyleVar<float_t> styleVar = Reflection::GetAttribute<Reflection::StyleVar<float_t>, DescriptorT>();
+        for (size_t i = 0; i < styleVar.values.size(); i++)
+        {
+            if (styleVar.values[i].has_value())
+            {
+                ImGui::PushStyleVar(static_cast<int32_t>(i), styleVar.values[i].value());
+                styleInfo.second++;
+            }
+        }
+    }
+
+    // Apply ImVec2 var styles
+    if constexpr (Reflection::HasAttribute<Reflection::StyleVar<ImVec2>, DescriptorT>())
+    {
+        constexpr Reflection::StyleVar<ImVec2> styleVar = Reflection::GetAttribute<Reflection::StyleVar<ImVec2>, DescriptorT>();
+        for (size_t i = 0; i < styleVar.values.size(); i++)
+        {
+            if (styleVar.values[i].has_value())
+            {
+                ImGui::PushStyleVar(static_cast<int32_t>(i), styleVar.values[i].value());
+                styleInfo.second++;
+            }
+        }
+    }
+
+    return styleInfo;
 }
 
 template <typename ReflectT, typename MemberT, typename DescriptorT, size_t Depth>
 bool_t TypeRenderer::DisplaySimpleMember(const Metadata<ReflectT, MemberT, DescriptorT, Depth>& metadata)
 {
     ImGui::PushID(metadata.obj);
-    CheckUpdateStyle(metadata);
+    const std::pair<int32_t, int32_t> styleInfo = CheckUpdateStyle(metadata);
+
     const bool_t changed = TypeRendererImpl<MemberT>::template Render<ReflectT, DescriptorT>(metadata);
+
+    ImGui::PopStyleColor(styleInfo.first);
+    ImGui::PopStyleVar(styleInfo.second);
     ImGui::PopID();
+
     return changed;
 }
 

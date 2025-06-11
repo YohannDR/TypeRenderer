@@ -162,6 +162,13 @@ namespace Meta
     template <typename T, typename A>
     constexpr bool_t IsStdMap<std::map<T, A>> = true;
 
+    /// @brief Checks whether the type is a @c std::pair
+    template <typename>
+    constexpr bool_t IsStdPair = false;
+
+    template <typename T0, typename T1>
+    constexpr bool_t IsStdPair<std::pair<T0, T1>> = true;
+
     /// @brief Checks if @c T is an integral, numeric type.
     /// 
     /// A native type is one of the following types:

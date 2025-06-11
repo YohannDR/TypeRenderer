@@ -276,4 +276,53 @@ namespace Reflection
         /// @param y Value
         constexpr explicit PaddingY(const float_t y) : value(y) {}
     };
+
+    /// @brief Adds style color to an element
+    struct StyleColor : MemberAttribute
+    {
+        /// @brief Holds the values
+        std::array<std::optional<uint32_t>, ImGuiCol_COUNT> values;
+
+        /// @brief Creates style colors, you can set all values here.
+        /// 
+        /// For example :
+        /// @code
+        /// StyleColor(
+        ///    std::make_pair(ImGuiCol_Text, IM_COL32(0xFF, 0, 0, 0xFF)),
+        ///    std::make_pair(ImGuiCol_TextSelectedBg, IM_COL32(0, 0xFF, 0, 0xFF))
+        /// )
+        /// @endcode
+        /// 
+        /// @tparam Args std::pair types
+        /// @param args Pair of ImGuiCol and uint32_t values
+        template <typename... Args>
+        constexpr explicit StyleColor(Args... args) { ((values[args.first] = args.second), ...); }
+    };
+
+    /// @brief Adds style values to an element
+    template <typename StyleType>
+    struct StyleVar : MemberAttribute
+    {
+        static_assert(Meta::IsAny<StyleType, float_t, ImVec2>,
+            "StyleVar attribute can only be used with float or ImVec2 specialization"
+        );
+        
+        /// @brief Holds the values
+        std::array<std::optional<StyleType>, ImGuiStyleVar_COUNT> values;
+
+        /// @brief Creates style values, you can set all values here.
+        /// 
+        /// For example :
+        /// @code
+        /// StyleVar<float_t>(
+        ///    std::make_pair(ImGuiStyleVar_ChildRounding, 2.f),
+        ///    std::make_pair(ImGuiStyleVar_TabRounding, 5.f)
+        /// )
+        /// @endcode
+        /// 
+        /// @tparam Args std::pair types
+        /// @param args Pair of ImGuiCol and uint32_t values
+        template <typename... Args>
+        constexpr explicit StyleVar(Args... args) { ((values[args.first] = args.second), ...); }
+    };
 }
